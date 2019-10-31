@@ -1,4 +1,4 @@
-package walker
+package test
 
 import (
 	"fmt"

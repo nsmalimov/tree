@@ -13,16 +13,23 @@ type Walker struct {
 	logger      *logrus.Logger
 	targetDir   string
 	onlyFolders bool
-	res         []string
+	Result      []string
 }
 
-func New(logger *logrus.Logger, targetDir string, onlyFolders bool) *Walker {
-	return &Walker{
+func New(logger *logrus.Logger, targetDir string, onlyFolders, targetIsCurrentDir bool) *Walker {
+	walker := &Walker{
 		logger:      logger,
 		targetDir:   targetDir,
 		onlyFolders: onlyFolders,
-		res:         make([]string, 0),
+		Result:      make([]string, 0),
 	}
+
+	if !targetIsCurrentDir {
+		// добавляем заданную директорию для "принта" в начале вывода результата
+		walker.Result = append(walker.Result, targetDir)
+	}
+
+	return walker
 }
 
 func (w *Walker) dirnamesFromPath(path string) (dirnames []string) {
@@ -46,7 +53,7 @@ func (w *Walker) dirnamesFromPath(path string) (dirnames []string) {
 	return
 }
 
-func (w *Walker) walk(filePath string, prefix string) {
+func (w *Walker) walkSync(filePath string, prefix string) {
 	dirnames := w.dirnamesFromPath(filePath)
 
 	for index, dirname := range dirnames {
@@ -68,21 +75,21 @@ func (w *Walker) walk(filePath string, prefix string) {
 		}
 
 		if index == len(dirnames)-1 {
-			w.res = append(w.res, fmt.Sprintf("%s└──%s", prefix, dirname))
-			w.walk(subFilePath, prefix+"   ")
+			w.Result = append(w.Result, fmt.Sprintf("%s└── %s", prefix, dirname))
+			w.walkSync(subFilePath, prefix+"    ")
 		} else {
-			w.res = append(w.res, fmt.Sprintf("%s├──%s", prefix, dirname))
-			w.walk(subFilePath, prefix+"│  ")
+			w.Result = append(w.Result, fmt.Sprintf("%s├── %s", prefix, dirname))
+			w.walkSync(subFilePath, prefix+"│   ")
 		}
 	}
 }
 
-func (w *Walker) Start() {
-	w.walk(w.targetDir, "")
+func (w *Walker) StartSync() {
+	w.walkSync(w.targetDir, "")
 }
 
 func (w *Walker) Print() {
-	for _, elem := range w.res {
+	for _, elem := range w.Result {
 		fmt.Println(elem)
 	}
 }

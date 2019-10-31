@@ -22,12 +22,15 @@ func main() {
 		logger.Fatalf("Error when try os.Getwd, err: %s", err)
 	}
 
+	var targetIsCurrentDir bool
+
 	if len(os.Args) >= 1 && len(os.Args) < 3 {
 		for _, arg := range os.Args[1:] {
 			if arg == "-d" {
 				onlyFolders = true
 			} else {
-				targetDir = os.Args[1]
+				targetIsCurrentDir = true
+				targetDir = arg
 			}
 		}
 	} else {
@@ -38,8 +41,9 @@ func main() {
 		logger,
 		targetDir,
 		onlyFolders,
+		targetIsCurrentDir,
 	)
 
-	walker.Start()
+	walker.StartSync()
 	walker.Print()
 }
