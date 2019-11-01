@@ -24,10 +24,8 @@ func New(logger *logrus.Logger, targetDir string, onlyFolders, targetIsCurrentDi
 		Result:      make([]string, 0),
 	}
 
-	if !targetIsCurrentDir {
-		// добавляем заданную директорию для "принта" в начале вывода результата
-		walker.Result = append(walker.Result, targetDir)
-	}
+	// добавляем заданную директорию для "принта" в начале вывода результата
+	walker.Result = append(walker.Result, targetDir)
 
 	return walker
 }

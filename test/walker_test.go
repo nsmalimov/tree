@@ -27,7 +27,6 @@ func TestWalk(t *testing.T) {
 
 	if err != nil {
 		t.Fatalf("Error when try os.Getwd, err: %s", err)
-		return
 	}
 
 	testCases := []testCase{
@@ -94,11 +93,7 @@ func TestWalk(t *testing.T) {
 
 		walker.StartSync()
 
-		if testCase.targetIsCurrentDir {
-			assert.Equal(t, testCase.res, walker.Result)
-		} else {
-			assert.True(t, len(walker.Result) == (len(testCase.res)+1))
-			assert.Equal(t, testCase.res, walker.Result[1:])
-		}
+		assert.True(t, len(walker.Result) == (len(testCase.res)+1))
+		assert.Equal(t, testCase.res, walker.Result[1:])
 	}
 }
